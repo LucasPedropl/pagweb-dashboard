@@ -3,10 +3,58 @@ import { Client } from '../../../types';
 import { Edit2, Trash2, Plus, X, AlertTriangle, Search, Filter } from 'lucide-react';
 
 const initialClients: Client[] = [
-  { id: '1', name: 'João da Silva', status: 'Ativo', plan: 'Premium', joinDate: '15/08/2023' },
-  { id: '2', name: 'Maria Oliveira', status: 'Inativo', plan: 'Básico', joinDate: '01/03/2023' },
-  { id: '3', name: 'Carlos Ferreira', status: 'Ativo', plan: 'Enterprise', joinDate: '10/09/2023' },
+  { 
+    id: '1', 
+    firstName: 'João', 
+    lastName: 'da Silva', 
+    cpf: '123.456.789-00', 
+    email: 'joao@empresa.com', 
+    phone: '(11) 99999-9999', 
+    address: 'Rua das Flores, 123 - São Paulo, SP', 
+    status: 'Ativo', 
+    joinDate: '15/08/2023' 
+  },
+  { 
+    id: '2', 
+    firstName: 'Maria', 
+    lastName: 'Oliveira', 
+    cpf: '987.654.321-11', 
+    email: 'maria@loja.com', 
+    phone: '(21) 98888-8888', 
+    address: 'Av. Paulista, 1000 - São Paulo, SP', 
+    status: 'Inativo', 
+    joinDate: '01/03/2023' 
+  },
+  { 
+    id: '3', 
+    firstName: 'Carlos', 
+    lastName: 'Ferreira', 
+    cpf: '456.789.123-22', 
+    email: 'carlos@tech.com', 
+    phone: '(31) 97777-7777', 
+    address: 'Rua da Tecnologia, 500 - Belo Horizonte, MG', 
+    status: 'Ativo', 
+    joinDate: '10/09/2023' 
+  },
 ];
+
+// Helper functions for masks
+const formatCPF = (value: string) => {
+  return value
+    .replace(/\D/g, '')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d{1,2})/, '$1-$2')
+    .replace(/(-\d{2})\d+?$/, '$1');
+};
+
+const formatPhone = (value: string) => {
+  return value
+    .replace(/\D/g, '')
+    .replace(/(\d{2})(\d)/, '($1) $2')
+    .replace(/(\d{5})(\d)/, '$1-$2')
+    .replace(/(-\d{4})\d+?$/, '$1');
+};
 
 export const Empresas: React.FC = () => {
   const [clients, setClients] = useState<Client[]>(initialClients);
@@ -17,7 +65,7 @@ export const Empresas: React.FC = () => {
 
   // Handlers
   const handleOpenCreate = () => {
-    setCurrentClient({ status: 'Ativo', plan: 'Básico' });
+    setCurrentClient({ status: 'Ativo' }); // Default status for new clients
     setIsFormOpen(true);
   };
 
@@ -56,19 +104,29 @@ export const Empresas: React.FC = () => {
     }
   };
 
+  const handleCPFChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCPF(e.target.value);
+    setCurrentClient({ ...currentClient, cpf: formatted });
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhone(e.target.value);
+    setCurrentClient({ ...currentClient, phone: formatted });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-800">Gestão de Clientes</h1>
-          <p className="text-slate-500 mt-1">Gerencie as empresas e usuários cadastrados.</p>
+          <p className="text-slate-500 mt-1">Cadastro de pessoas físicas.</p>
         </div>
         <button 
           onClick={handleOpenCreate}
-          className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm"
+          className="flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-900 transition-colors shadow-sm"
         >
           <Plus size={18} />
-          Nova Empresa
+          Novo Cliente
         </button>
       </div>
       
@@ -78,8 +136,8 @@ export const Empresas: React.FC = () => {
           <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
           <input 
             type="text" 
-            placeholder="Buscar empresas..." 
-            className="w-full pl-10 pr-4 py-2 text-sm bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+            placeholder="Buscar por nome ou CPF..." 
+            className="w-full pl-10 pr-4 py-2 text-sm bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-slate-500 focus:border-slate-500 outline-none"
           />
         </div>
         <button className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
@@ -91,20 +149,28 @@ export const Empresas: React.FC = () => {
       {/* Table */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left min-w-[640px]">
+          <table className="w-full text-left min-w-[800px]">
             <thead className="bg-slate-50">
               <tr className="border-b border-slate-200">
-                <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Nome</th>
+                <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Nome Completo</th>
+                <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">CPF</th>
+                <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Contato</th>
                 <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Plano</th>
-                <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Data de Adesão</th>
+                <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Data Cadastro</th>
                 <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {clients.map((client) => (
                 <tr key={client.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="py-4 px-6 font-medium text-slate-900">{client.name}</td>
+                  <td className="py-4 px-6 font-medium text-slate-900">
+                    {client.firstName} {client.lastName}
+                  </td>
+                  <td className="py-4 px-6 text-slate-600 font-mono text-sm">{client.cpf}</td>
+                  <td className="py-4 px-6 text-slate-600">
+                    <div className="text-sm">{client.email}</div>
+                    <div className="text-xs text-slate-400">{client.phone}</div>
+                  </td>
                   <td className="py-4 px-6">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center
                       ${client.status === 'Ativo' ? 'bg-emerald-100 text-emerald-700' : 
@@ -117,17 +183,12 @@ export const Empresas: React.FC = () => {
                       {client.status}
                     </span>
                   </td>
-                  <td className="py-4 px-6 text-slate-600">
-                    <div className="inline-block px-2 py-1 bg-slate-100 rounded text-xs border border-slate-200">
-                        {client.plan}
-                    </div>
-                  </td>
                   <td className="py-4 px-6 text-slate-500 text-sm">{client.joinDate}</td>
                   <td className="py-4 px-6">
                     <div className="flex items-center justify-end gap-2">
                         <button 
                             onClick={() => handleOpenEdit(client)}
-                            className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
+                            className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded transition-colors"
                             title="Editar"
                         >
                             <Edit2 size={16} />
@@ -148,61 +209,130 @@ export const Empresas: React.FC = () => {
         </div>
         {clients.length === 0 && (
              <div className="p-8 text-center text-slate-500">
-                 Nenhuma empresa encontrada.
+                 Nenhum cliente encontrado.
              </div>
         )}
       </div>
 
       {/* Form Modal */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
             <div className="flex justify-between items-center p-4 border-b border-slate-100 bg-slate-50">
               <h3 className="font-semibold text-slate-900">
-                {currentClient.id ? 'Editar Empresa' : 'Nova Empresa'}
+                {currentClient.id ? 'Editar Dados do Cliente' : 'Novo Cliente'}
               </h3>
               <button onClick={() => setIsFormOpen(false)} className="text-slate-400 hover:text-slate-600">
                 <X size={20} />
               </button>
             </div>
-            <form onSubmit={handleSave} className="p-4 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Nome da Empresa</label>
-                <input 
-                  type="text" 
-                  required
-                  value={currentClient.name || ''}
-                  onChange={e => setCurrentClient({...currentClient, name: e.target.value})}
-                  className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+            
+            <form onSubmit={handleSave} className="p-6 overflow-y-auto">
+              <div className="space-y-6">
+                
+                {/* Dados Pessoais */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
-                  <select 
-                    value={currentClient.status || 'Ativo'}
-                    onChange={e => setCurrentClient({...currentClient, status: e.target.value as any})}
-                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  >
-                    <option value="Ativo">Ativo</option>
-                    <option value="Inativo">Inativo</option>
-                    <option value="Pendente">Pendente</option>
-                  </select>
+                  <h4 className="text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wider">Dados Pessoais</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Nome</label>
+                      <input 
+                        type="text" 
+                        required
+                        value={currentClient.firstName || ''}
+                        onChange={e => setCurrentClient({...currentClient, firstName: e.target.value})}
+                        className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                        placeholder="Primeiro nome"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Sobrenome</label>
+                      <input 
+                        type="text" 
+                        required
+                        value={currentClient.lastName || ''}
+                        onChange={e => setCurrentClient({...currentClient, lastName: e.target.value})}
+                        className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                        placeholder="Sobrenome"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">CPF</label>
+                      <input 
+                        type="text" 
+                        required
+                        value={currentClient.cpf || ''}
+                        onChange={handleCPFChange}
+                        maxLength={14}
+                        className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                        placeholder="000.000.000-00"
+                      />
+                    </div>
+                  </div>
                 </div>
+
+                {/* Contato */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Plano</label>
-                  <select 
-                    value={currentClient.plan || 'Básico'}
-                    onChange={e => setCurrentClient({...currentClient, plan: e.target.value as any})}
-                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  >
-                    <option value="Básico">Básico</option>
-                    <option value="Premium">Premium</option>
-                    <option value="Enterprise">Enterprise</option>
-                  </select>
+                  <h4 className="text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wider border-t border-slate-100 pt-4">Contato & Endereço</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                      <input 
+                        type="email" 
+                        required
+                        value={currentClient.email || ''}
+                        onChange={e => setCurrentClient({...currentClient, email: e.target.value})}
+                        className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                        placeholder="email@exemplo.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Telefone</label>
+                      <input 
+                        type="text" 
+                        required
+                        value={currentClient.phone || ''}
+                        onChange={handlePhoneChange}
+                        maxLength={15}
+                        className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                        placeholder="(00) 00000-0000"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Endereço Completo</label>
+                      <input 
+                        type="text" 
+                        required
+                        value={currentClient.address || ''}
+                        onChange={e => setCurrentClient({...currentClient, address: e.target.value})}
+                        className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                        placeholder="Rua, Número, Bairro, Cidade - UF"
+                      />
+                    </div>
+                  </div>
                 </div>
+
+                {/* Status - Only visible when editing */}
+                {currentClient.id && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wider border-t border-slate-100 pt-4">Controle Interno</h4>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Status do Cadastro</label>
+                      <select 
+                        value={currentClient.status || 'Ativo'}
+                        onChange={e => setCurrentClient({...currentClient, status: e.target.value as any})}
+                        className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                      >
+                        <option value="Ativo">Ativo</option>
+                        <option value="Inativo">Inativo</option>
+                        <option value="Pendente">Pendente</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="pt-4 flex justify-end gap-2">
+
+              <div className="pt-8 flex justify-end gap-2">
                 <button 
                   type="button" 
                   onClick={() => setIsFormOpen(false)}
@@ -212,9 +342,9 @@ export const Empresas: React.FC = () => {
                 </button>
                 <button 
                   type="submit" 
-                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+                  className="px-4 py-2 text-sm font-medium text-white bg-slate-800 rounded-lg hover:bg-slate-900"
                 >
-                  Salvar
+                  {currentClient.id ? 'Salvar Alterações' : 'Cadastrar Cliente'}
                 </button>
               </div>
             </form>
@@ -224,14 +354,14 @@ export const Empresas: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
            <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 animate-in fade-in zoom-in-95 duration-200">
               <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
                   <AlertTriangle className="text-red-600" size={24} />
               </div>
               <h3 className="text-lg font-semibold text-center text-slate-900 mb-2">Confirmar Exclusão</h3>
               <p className="text-sm text-center text-slate-500 mb-6">
-                  Tem certeza que deseja remover esta empresa? Esta ação não pode ser desfeita e removerá o acesso do usuário.
+                  Tem certeza que deseja remover este cliente? Todos os dados pessoais serão apagados permanentemente.
               </p>
               <div className="flex gap-3">
                   <button 

@@ -1,12 +1,13 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, CreditCard, Menu as MenuIcon } from 'lucide-react';
+import { LayoutDashboard, Users, CreditCard, Layers, Menu as MenuIcon } from 'lucide-react';
 
 export const MobileNav: React.FC = () => {
   const navItems = [
     { label: 'Início', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Clientes', href: '/empresas', icon: Users },
-    { label: 'Planos', href: '/planos', icon: CreditCard },
+    { label: 'Planos', href: '/planos', icon: Layers },
+    { label: 'Assinaturas', href: '/assinaturas', icon: CreditCard },
     { label: 'Menu', href: '/menu', icon: MenuIcon },
   ];
 

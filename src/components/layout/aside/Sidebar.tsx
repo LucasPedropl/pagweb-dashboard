@@ -9,7 +9,9 @@ import {
   Activity,
   Settings, 
   Wallet,
-  ChevronLeft
+  ChevronLeft,
+  Layers,
+  LifeBuoy
 } from 'lucide-react';
 import { NavItem } from '../../../types';
 
@@ -21,10 +23,12 @@ interface SidebarProps {
 const navItems: NavItem[] = [
   { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Clientes', href: '/empresas', icon: Users },
-  { label: 'Assinaturas', href: '/planos', icon: CreditCard },
+  { label: 'Planos', href: '/planos', icon: Layers },
+  { label: 'Assinaturas', href: '/assinaturas', icon: CreditCard },
   { label: 'Pagamentos', href: '/pagamentos', icon: DollarSign },
   { label: 'Relatórios', href: '/relatorios', icon: FileBarChart },
   { label: 'Histórico', href: '/historico', icon: Activity },
+  { label: 'Suporte', href: '/suporte', icon: LifeBuoy },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleCollapse }) => {
@@ -56,7 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleCollapse })
       </button>
 
       {/* Navigation */}
-      <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
+      <nav className={`p-4 space-y-2 flex-1 ${isCollapsed ? 'overflow-visible' : 'overflow-y-auto'}`}>
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -64,18 +68,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleCollapse })
               key={item.href}
               to={item.href}
               className={({ isActive }) => `
-                flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors whitespace-nowrap group
+                flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors whitespace-nowrap group relative
                 ${isActive 
                   ? 'bg-slate-800 text-white font-semibold' 
                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}
                 ${isCollapsed ? 'justify-center px-2' : ''}
               `}
-              title={isCollapsed ? item.label : ''}
             >
               <Icon size={20} className="min-w-[20px]" />
+              
               <span className={`transition-all duration-300 ${isCollapsed ? 'w-0 hidden' : 'w-auto'}`}>
                 {item.label}
               </span>
+
+              {/* Tooltip (Legenda) quando fechado */}
+              {isCollapsed && (
+                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1.5 bg-slate-800 text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg">
+                  {item.label}
+                  {/* Seta do tooltip */}
+                  <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+                </div>
+              )}
             </NavLink>
           );
         })}
@@ -86,18 +99,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleCollapse })
         <NavLink
           to="/configuracoes"
           className={({ isActive }) => `
-            flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors whitespace-nowrap
+            flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors whitespace-nowrap group relative
             ${isActive 
               ? 'bg-slate-800 text-white font-semibold' 
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}
             ${isCollapsed ? 'justify-center px-2' : ''}
           `}
-          title={isCollapsed ? "Configurações" : ''}
         >
           <Settings size={20} className="min-w-[20px]" />
           <span className={`transition-all duration-300 ${isCollapsed ? 'w-0 hidden' : 'w-auto'}`}>
             Configurações
           </span>
+
+          {/* Tooltip (Legenda) para Configurações */}
+          {isCollapsed && (
+            <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1.5 bg-slate-800 text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg">
+              Configurações
+              <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+            </div>
+          )}
         </NavLink>
       </div>
     </aside>
